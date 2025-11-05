@@ -1,11 +1,10 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getClient } from '@/app/actions/clients'
 import { getQuote } from '@/app/actions/quotes'
 import { Header } from '@/components/header'
+import { BackButton } from '@/components/back-button'
 import { QuotePDFViewer } from '@/components/quote-pdf-viewer'
-import { ArrowLeft } from 'lucide-react'
 
 export default async function QuotePDFPage({
   params,
@@ -38,19 +37,14 @@ export default async function QuotePDFPage({
     .single()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header />
 
       <main className="container mx-auto px-4 py-8">
+        <BackButton href={`/clients/${client.id}`} label="Voltar ao Cliente" />
+
         <div className="mb-6">
-          <Link
-            href={`/clients/${client.id}`}
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Voltar para Cliente
-          </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Orçamento</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Orçamento</h2>
           <p className="text-gray-600 mt-1">Cliente: {client.name}</p>
         </div>
 

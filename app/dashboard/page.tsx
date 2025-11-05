@@ -7,6 +7,7 @@ import { ClientCard } from '@/components/client-card'
 import { ClientFilters } from '@/components/client-filters'
 import { AddClientDialog } from '@/components/add-client-dialog'
 import { SearchInput } from '@/components/search-input'
+import { StatsCards } from '@/components/stats-cards'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default async function DashboardPage({
@@ -23,21 +24,27 @@ export default async function DashboardPage({
   }
 
   const clients = await getClients(searchParams.search, searchParams.status)
+  const allClients = await getClients() // Para estatísticas
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Meus Clientes</h2>
-            <p className="text-gray-600 mt-1">
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              Meus Clientes
+            </h2>
+            <p className="text-gray-600 mt-2">
               {clients.length} {clients.length === 1 ? 'cliente' : 'clientes'}
+              {searchParams.search || searchParams.status ? ' (filtrado)' : ''}
             </p>
           </div>
           <AddClientDialog />
         </div>
+
+        <StatsCards clients={allClients} />
 
         <div className="space-y-4 mb-6">
           <Suspense fallback={<div>Carregando...</div>}>

@@ -4,10 +4,12 @@ import { LogOut } from 'lucide-react'
 
 export function Header() {
   return (
-    <header className="border-b bg-white">
+    <header className="border-b bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mini CRM</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Mini CRM
+          </h1>
           <p className="text-sm text-gray-600">Gestão de Clientes</p>
         </div>
         <form action={logout}>
