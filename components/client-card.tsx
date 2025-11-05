@@ -11,10 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { DeleteClientDialog } from '@/components/delete-client-dialog'
 import { Phone, User, Briefcase, DollarSign, MoreVertical, Trash2, Eye } from 'lucide-react'
 import { MessageSquare as WhatsAppIcon } from 'lucide-react'
 import type { Client } from '@/app/actions/clients'
-import { deleteClient } from '@/app/actions/clients'
 import { getWhatsAppLink } from '@/lib/utils/whatsapp'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -34,14 +34,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export function ClientCard({ client }: { client: Client }) {
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  async function handleDelete() {
-    if (confirm(`Tem certeza que deseja excluir o cliente "${client.name}"?\n\nEsta ação não pode ser desfeita e todos os dados relacionados (notas e orçamentos) serão excluídos.`)) {
-      setIsDeleting(true)
-      await deleteClient(client.id)
-    }
-  }
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-0 shadow-md bg-white relative overflow-hidden">
@@ -90,12 +83,11 @@ export function ClientCard({ client }: { client: Client }) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={handleDelete}
-                  disabled={isDeleting}
+                  onClick={() => setShowDeleteDialog(true)}
                   className="text-red-600 focus:text-red-600 cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {isDeleting ? 'Excluindo...' : 'Excluir'}
+                  Excluir
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -158,6 +150,13 @@ export function ClientCard({ client }: { client: Client }) {
           </Link>
         </Button>
       </CardFooter>
+
+      <DeleteClientDialog
+        clientId={client.id}
+        clientName={client.name}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+      />
     </Card>
   )
 }

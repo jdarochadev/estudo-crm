@@ -8,14 +8,24 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { Trash2 } from 'lucide-react'
+import { DeleteNoteDialog } from '@/components/delete-note-dialog'
 
 export function ClientNotes({ clientId, initialNotes }: { clientId: string; initialNotes: Note[] }) {
-  const [notes] = useState(initialNotes)
+  const [notes, setNotes] = useState(initialNotes)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [noteToDelete, setNoteToDelete] = useState<{ id: string; preview: string } | null>(null)
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true)
-    await createNote(clientId, formData)
+    const text = formData.get('text') as string
+
+    const result = await createNote(clientId, formData)
+
+    if (result.success && result.note) {
+      // Adiciona a nova nota ao estado
+      setNotes([...notes, result.note])
+    }
+
     setIsSubmitting(false)
 
     // Limpa o textarea
@@ -24,9 +34,14 @@ export function ClientNotes({ clientId, initialNotes }: { clientId: string; init
   }
 
   async function handleDelete(noteId: string) {
-    if (confirm('Tem certeza que deseja excluir esta nota?')) {
-      await deleteNote(noteId, clientId)
+    const result = await deleteNote(noteId, clientId)
+
+    if (result.success) {
+      // Remove a nota do estado
+      setNotes(notes.filter(note => note.id !== noteId))
     }
+
+    setNoteToDelete(null)
   }
 
   return (
@@ -51,7 +66,10 @@ export function ClientNotes({ clientId, initialNotes }: { clientId: string; init
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleDelete(note.id)}
+                  onClick={() => setNoteToDelete({
+                    id: note.id,
+                    preview: note.text.slice(0, 50) + (note.text.length > 50 ? '...' : '')
+                  })}
                 >
                   <Trash2 className="h-4 w-4 text-gray-500 hover:text-red-500" />
                 </Button>
@@ -72,6 +90,14 @@ export function ClientNotes({ clientId, initialNotes }: { clientId: string; init
           {isSubmitting ? 'Adicionando...' : 'Adicionar Nota'}
         </Button>
       </form>
+
+      <DeleteNoteDialog
+        noteId={noteToDelete?.id || ''}
+        notePreview={noteToDelete?.preview || ''}
+        open={!!noteToDelete}
+        onOpenChange={(open) => !open && setNoteToDelete(null)}
+        onConfirm={handleDelete}
+      />
     </div>
   )
 }

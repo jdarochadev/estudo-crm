@@ -38,28 +38,30 @@ export async function createNote(clientId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'Não autenticado' }
+    return { error: 'Não autenticado', success: false }
   }
 
   const text = formData.get('text') as string
 
   if (!text || text.trim() === '') {
-    return { error: 'Texto da nota não pode estar vazio' }
+    return { error: 'Texto da nota não pode estar vazio', success: false }
   }
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('notes')
     .insert([{
       client_id: clientId,
       text: text.trim(),
     }])
+    .select()
+    .single()
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message, success: false }
   }
 
   revalidatePath(`/clients/${clientId}`)
-  return { success: true }
+  return { success: true, note: data as Note }
 }
 
 export async function deleteNote(noteId: string, clientId: string) {
