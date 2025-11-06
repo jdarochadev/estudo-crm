@@ -172,3 +172,5 @@ Este projeto foi criado para uso pessoal e educacional.
 ##  Suporte
 
 Se tiver dúvidas ou problemas, abra uma issue no repositório.
+
+-- README Feito com LLM, qualquer erro ou falha me avise!
